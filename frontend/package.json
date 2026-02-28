@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "expo": "~55.0.4",
+    "expo-audio": "~1.0.14",
     "expo-status-bar": "~55.0.4",
     "react": "19.2.0",
     "react-native": "0.83.2"
