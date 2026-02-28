@@ -12,7 +12,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 export ELEVENLABS_API_KEY=your_key
 export ELEVENLABS_VOICE_ID=your_voice_id
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main.elevenlabs_tts_service:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### Frontend
