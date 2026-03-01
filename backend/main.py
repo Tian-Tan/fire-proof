@@ -24,6 +24,8 @@ from services import (
     estimate_coverage_simple,
     get_route,
     get_route_to_nearest_safe_place,
+    initialize_rag_store,
+    retrieve_guidance,
 )
 
 # ----------------------------
@@ -123,6 +125,7 @@ class LLMChatResponse(BaseModel):
 
 
 class GuidanceRequest(BaseModel):
+    question: str = Field(..., min_length=5, max_length=1200)
     latitude: float = Field(..., ge=-90, le=90)
     longitude: float = Field(..., ge=-180, le=180)
     fire_radius_km: float = Field(50, ge=10, le=200)
@@ -133,9 +136,18 @@ class GuidanceRequest(BaseModel):
     temperature: Optional[float] = None
 
 
+class GuidanceSource(BaseModel):
+    title: str
+    source_url: str
+    source_org: str
+    topic: str
+    score: float
+
+
 class GuidanceResponse(BaseModel):
     navigation: NavigationResponse
     guidance_text: str
+    sources: List[GuidanceSource]
     model: str
     latency_s: float
     raw: Dict[str, Any]
@@ -160,6 +172,10 @@ async def _startup():
     global _vllm_client
     timeout = httpx.Timeout(VLLM_TIMEOUT_S, connect=10.0)
     _vllm_client = httpx.AsyncClient(timeout=timeout)
+    try:
+        initialize_rag_store()
+    except Exception as e:
+        print(f"RAG initialization skipped: {e}")
 
 
 @app.on_event("shutdown")
@@ -394,15 +410,10 @@ async def get_safe_route(
 
 
 # ----------------------------
-# Optional: Guidance endpoint (navigation + LLM)
+# Guidance endpoint
 # ----------------------------
 @app.post("/api/guidance", response_model=GuidanceResponse)
 async def generate_guidance(req: GuidanceRequest):
-    """
-    Generates short safety guidance using the existing navigation logic + vLLM.
-    This is NOT a full RAG yet; it’s a structured way to produce concise instructions.
-    """
-    # Reuse the same logic as /api/navigate (keeps behavior consistent)
     nav = await get_navigation_data(
         latitude=req.latitude,
         longitude=req.longitude,
@@ -411,7 +422,6 @@ async def generate_guidance(req: GuidanceRequest):
         include_route=req.include_route,
     )
 
-    # Build a compact summary for the LLM (avoid dumping huge objects)
     nav_summary = {
         "alert_level": str(nav.alert_level),
         "fires_detected": nav.fires_detected,
@@ -429,21 +439,51 @@ async def generate_guidance(req: GuidanceRequest):
         "warnings": nav.warnings,
     }
 
+    retrieval_query = (
+        f"Question: {req.question}\n"
+        f"User context: {req.user_context or 'none'}\n"
+        f"Alert level: {nav.alert_level}\n"
+        f"Cell coverage: {nav.cell_coverage_status}\n"
+        f"Evacuation recommended: {nav.evacuation_recommended}\n"
+    )
+    rag_hits: list[dict[str, Any]] = []
+    try:
+        rag_hits = retrieve_guidance(retrieval_query, top_k=req.top_k)
+    except Exception as e:
+        nav.warnings.append(f"Wildfire guidance retrieval unavailable: {e}")
+
     temperature = req.temperature if req.temperature is not None else VLLM_TEMPERATURE
     max_tokens = req.max_tokens if req.max_tokens is not None else VLLM_MAX_TOKENS
 
-    prompt = (
+    context_blocks = []
+    for index, hit in enumerate(rag_hits, start=1):
+        context_blocks.append(
+            f"[{index}] {hit['title']} | {hit['source_org']} | topic={hit['topic']} | url={hit['source_url']}\n"
+            f"{hit['content']}"
+        )
+
+    system_prompt = (
         "You are a wildfire safety assistant. "
-        "Given the navigation summary, write clear, short, actionable guidance in plain language. "
-        "Do not invent facts. If evacuation is recommended, say so, but avoid giving legal orders. "
-        "Include a short checklist. Keep it under 10 bullet points.\n\n"
+        "Answer only with practical wildfire safety guidance grounded in the retrieved sources and the navigation summary. "
+        "Do not invent official orders, shelters, air quality readings, or medical instructions. "
+        "If the navigation summary suggests evacuation risk, say the user should follow local emergency authorities immediately. "
+        "Prefer short bullets and include source citations like [1] or [2] after factual claims."
+    )
+    user_prompt = (
+        f"User question: {req.question}\n"
         f"User context: {req.user_context or 'none'}\n"
-        f"Navigation summary: {nav_summary}\n"
+        f"Navigation summary: {nav_summary}\n\n"
+        "Retrieved wildfire guidance context:\n"
+        f"{chr(10).join(context_blocks) if context_blocks else 'No retrieved context available.'}\n\n"
+        "Write concise, situation-specific guidance with a short checklist."
     )
 
     t0 = time.time()
     raw = await _call_vllm_chat(
-        messages=[{"role": "user", "content": prompt}],
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
         temperature=temperature,
         max_tokens=max_tokens,
     )
@@ -453,6 +493,16 @@ async def generate_guidance(req: GuidanceRequest):
     return GuidanceResponse(
         navigation=nav,
         guidance_text=text,
+        sources=[
+            GuidanceSource(
+                title=hit["title"],
+                source_url=hit["source_url"],
+                source_org=hit["source_org"],
+                topic=hit["topic"],
+                score=hit["score"],
+            )
+            for hit in rag_hits
+        ],
         model=VLLM_MODEL,
         latency_s=round(latency, 3),
         raw=raw,

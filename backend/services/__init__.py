@@ -25,6 +25,14 @@ from .routing_service import (
     decode_polyline,
 )
 
+from .rag_service import (
+    ensure_rag_schema,
+    initialize_rag_store,
+    load_seed_documents,
+    retrieve_guidance,
+    seed_documents,
+)
+
 __all__ = [
     # Fire
     "fetch_fires",
@@ -45,4 +53,10 @@ __all__ = [
     "get_route",
     "get_route_to_nearest_safe_place",
     "decode_polyline",
+    # RAG
+    "ensure_rag_schema",
+    "initialize_rag_store",
+    "load_seed_documents",
+    "retrieve_guidance",
+    "seed_documents",
 ]
