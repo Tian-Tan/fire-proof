@@ -4,6 +4,7 @@ import * as Location from 'expo-location';
 export type Coords = {
   latitude: number;
   longitude: number;
+  heading: number;
 };
 
 export function useUserLocation() {
@@ -24,6 +25,7 @@ export function useUserLocation() {
           const c = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
+            heading: location.coords.heading ?? 0,
           };
           console.log('User coords:', c);
           setCoords(c);
