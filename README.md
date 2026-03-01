@@ -2,6 +2,7 @@
 A Hack 4 Humanity 2026 project
 # Fire-Proof
 
+## System Architecture
 ```
 ┌─────────────────────┐     ┌──────────────────────────────────────────────┐     ┌─────────────────────┐
 │  OpenRouteService   │     │                  AMD Cloud                   │     │  Government         │
