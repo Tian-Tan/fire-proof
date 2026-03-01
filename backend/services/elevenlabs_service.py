@@ -5,9 +5,9 @@ from fastapi import HTTPException, UploadFile
 
 
 ELEVENLABS_BASE_URL = "https://api.elevenlabs.io/v1"
-DEFAULT_TTS_MODEL = "eleven_multilingual_v2"
+DEFAULT_TTS_MODEL = "eleven_flash_v2_5"
 DEFAULT_STT_MODEL = "scribe_v1"
-DEFAULT_OUTPUT_FORMAT = "mp3_44100_128"
+DEFAULT_OUTPUT_FORMAT = "mp3_22050_32"
 
 
 def _get_api_key() -> str:
