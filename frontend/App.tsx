@@ -20,6 +20,7 @@ import {
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useFireAlert } from "./hooks/useFireAlert";
 import { useNavigation } from "./hooks/useNavigation";
+import { useTTS } from "./hooks/useTTS";
 import { OSM_STYLE } from "./constants/mapConfig";
 import {
   buildFireGeoJSON,
@@ -60,6 +61,7 @@ export default function App() {
   const [stepsExpanded, setStepsExpanded] = useState(false);
   const [bannerHeight, setBannerHeight] = useState(0);
   const isAnimating = useRef(false);
+  const { speak } = useTTS();
 
   useEffect(() => {
     if (granted) setFollowing(true);
@@ -120,6 +122,21 @@ export default function App() {
     if (nearest !== currentStepIndex) setCurrentStepIndex(nearest);
   }, [coords?.latitude, coords?.longitude]);
 
+  // Announce destination and first instruction when route loads
+  useEffect(() => {
+    if (route?.steps[0]) {
+      const destination = route.destinationName ?? "a safe location";
+      speak(`Your recommended evacuation destination is ${destination}. ${route.steps[0].instruction}`);
+    }
+  }, [route]);
+
+  // Speak each subsequent step as user advances
+  useEffect(() => {
+    if (currentStepIndex > 0 && route?.steps[currentStepIndex]) {
+      speak(route.steps[currentStepIndex].instruction);
+    }
+  }, [currentStepIndex]);
+
   const handleRegionChanging = () => {
     if (!isAnimating.current) setFollowing(false);
   };
@@ -164,6 +181,13 @@ export default function App() {
           onToggleExpanded={() => setStepsExpanded((e) => !e)}
           onClear={clearRoute}
         />
+      )}
+
+      {routeLoading && (
+        <View style={[styles.routeLoadingCard, { top: bannerHeight + 8 }]}>
+          <ActivityIndicator color="#007AFF" />
+          <Text style={styles.routeLoadingText}>Finding safest route…</Text>
+        </View>
       )}
 
       <MapView
@@ -351,14 +375,6 @@ export default function App() {
         </TouchableOpacity>
       )}
 
-      {/* Route loading indicator */}
-      {routeLoading && (
-        <View style={styles.routeLoadingCard}>
-          <ActivityIndicator color="#007AFF" />
-          <Text style={styles.routeLoadingText}>Finding safest route…</Text>
-        </View>
-      )}
-
       {/* Route error */}
       {routeError && (
         <View style={styles.routeErrorCard}>
@@ -394,20 +410,21 @@ const styles = StyleSheet.create({
   navigateButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
   routeLoadingCard: {
     position: "absolute",
-    bottom: 120,
-    alignSelf: "center",
+    left: 12,
+    right: 12,
+    zIndex: 5,
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     paddingHorizontal: 20,
     paddingVertical: 14,
-    borderRadius: 28,
+    borderRadius: 12,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   routeLoadingText: { fontSize: 15, color: "#1c1c1e" },
   routeErrorCard: {
