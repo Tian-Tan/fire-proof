@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { MapView, Camera, UserLocation } from '@maplibre/maplibre-react-native';
+import { MapView, Camera, ShapeSource, CircleLayer } from '@maplibre/maplibre-react-native';
 import { useUserLocation } from './hooks/useUserLocation';
 
 const OSM_STYLE = {
@@ -24,38 +23,65 @@ const OSM_STYLE = {
   ],
 };
 
-
 export default function App() {
   const { coords, granted } = useUserLocation();
   const [following, setFollowing] = useState(false);
+  const isAnimating = useRef(false);
 
+  // Start following once location arrives
   useEffect(() => {
     if (granted) setFollowing(true);
   }, [granted]);
+
+  const handleRegionChanging = () => {
+    if (!isAnimating.current) setFollowing(false);
+  };
+
+  const handleRecenter = () => {
+    isAnimating.current = true;
+    setFollowing(true);
+    setTimeout(() => { isAnimating.current = false; }, 800);
+  };
+
+  const userLocationGeoJSON = coords ? {
+    type: 'FeatureCollection' as const,
+    features: [{
+      type: 'Feature' as const,
+      geometry: { type: 'Point' as const, coordinates: [coords.longitude, coords.latitude] },
+      properties: {},
+    }],
+  } : null;
 
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
         mapStyle={OSM_STYLE}
-        onRegionIsChanging={() => setFollowing(false)}
+        onRegionIsChanging={handleRegionChanging}
       >
         <Camera
-          followUserLocation={following}
-          followZoomLevel={12}
-          defaultSettings={{
-            centerCoordinate: [-119.5, 37.5],
-            zoomLevel: 5,
-          }}
+          centerCoordinate={following && coords ? [coords.longitude, coords.latitude] : undefined}
+          zoomLevel={following ? 14 : undefined}
+          animationDuration={500}
+          defaultSettings={{ centerCoordinate: [-119.5, 37.5], zoomLevel: 5 }}
         />
-        {granted && <UserLocation visible />}
+        {userLocationGeoJSON && (
+          <ShapeSource id="userLocation" shape={userLocationGeoJSON}>
+            <CircleLayer
+              id="userLocationDot"
+              style={{
+                circleRadius: 8,
+                circleColor: '#007AFF',
+                circleStrokeWidth: 2,
+                circleStrokeColor: '#fff',
+              }}
+            />
+          </ShapeSource>
+        )}
       </MapView>
 
       {granted && !following && (
-        <TouchableOpacity
-          style={styles.recenterButton}
-          onPress={() => setFollowing(true)}
-        >
+        <TouchableOpacity style={styles.recenterButton} onPress={handleRecenter}>
           <View style={styles.recenterIcon} />
         </TouchableOpacity>
       )}
@@ -66,12 +92,8 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
+  container: { flex: 1 },
+  map: { flex: 1 },
   recenterButton: {
     position: 'absolute',
     bottom: 48,
