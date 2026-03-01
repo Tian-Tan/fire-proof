@@ -2,32 +2,30 @@
 A Hack 4 Humanity 2026 project
 # Fire-Proof
 
-```mermaid
-flowchart LR
-    ORS["OpenRouteService API"]
-    FIRMS["NASA FIRMS Public API"]
-    EL["ElevenLabs API"]
-    GOV["Government Websites<br/>Guidelines / Alerts / Updates"]
-
-    subgraph AMD["AMD Cloud"]
-        FASTAPI["FastAPI Backend<br/>/api/llm<br/>/api/fires<br/>/api/audio<br/>/api/navigate"]
-        VLLM["vLLM<br/>Qwen 2.5 7B Instruct"]
-        RAG["PGVector RAG"]
-        HOST["Docker Compose Host"]
-    end
-
-    APP["React Native App<br/>on iPhone"]
-    OSM["OpenStreetMap"]
-
-    ORS --> FASTAPI
-    FIRMS --> FASTAPI
-    EL --> FASTAPI
-    FASTAPI --> VLLM
-    VLLM --> RAG
-    GOV -->|Ingest| RAG
-    HOST --> APP
-    FASTAPI --> APP
-    OSM --> APP
+```
+┌─────────────────────┐     ┌──────────────────────────────────────────────┐     ┌─────────────────────┐
+│  OpenRouteService   │     │                  AMD Cloud                   │     │  Government         │
+│       API           │────▶│                                              │     │  Websites           │
+├─────────────────────┤     │  ┌─────────────────────┐  ┌───────────────┐ │     │  1. ...             │
+│    NASA-FIRMS       │────▶│  │      FastAPI         │  │     vLLM      │ │     │  2. ...             │
+│    Public API       │     │  │   /api/llm           │──│  Qwen2.5-7B-  │ │     │  ...                │
+├─────────────────────┤     │  │   /api/fires         │  │   Instruct    │ │     │  n. ...             │
+│    ElevenLabs       │────▶│  │   /api/audio         │  └───────────────┘ │◀────┤                     │
+│       API           │     │  │                      │                    │Ingest└─────────────────────┘
+└─────────────────────┘     │  │  Host: docker-compose│  ┌───────────────┐ │
+                            │  └─────────────────────┘  │   PGVector    │ │
+                            │                            │     RAG       │ │
+                            │                            └───────────────┘ │
+                            └──────────────────────────────────────────────┘
+                                          │
+                                          │
+                            ┌─────────────▼──────────────┐
+                            │     React-Native App        │────▶ OpenStreetMaps
+                            │       on iPhone             │
+                            │  [ text input bar ]         │
+                            │  [ x ............. ]        │
+                            │        🎙️                   │
+                            └─────────────────────────────┘
 ```
 
 Fire-Proof is a wildfire safety assistant built for Hack 4 Humanity 2026. It combines live fire detection, route planning, voice interaction, and AI-generated guidance to help users understand nearby wildfire risk and move toward safer locations.
