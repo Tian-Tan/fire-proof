@@ -26,6 +26,10 @@ from .routing_service import (
     decode_polyline,
 )
 
+from .elevenlabs_service import (
+    text_to_speech,
+    speech_to_text,
+)
 from .rag_service import (
     ensure_rag_schema,
     initialize_rag_store,
@@ -55,6 +59,9 @@ __all__ = [
     "get_route",
     "get_route_to_nearest_safe_place",
     "decode_polyline",
+    # Audio
+    "text_to_speech",
+    "speech_to_text",
     # RAG
     "ensure_rag_schema",
     "initialize_rag_store",
