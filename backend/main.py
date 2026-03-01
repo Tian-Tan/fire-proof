@@ -240,9 +240,10 @@ async def check_fire_alert(
     latitude: float = Query(..., ge=-90, le=90),
     longitude: float = Query(..., ge=-180, le=180),
     alert_threshold_km: float = Query(10, ge=1, le=100),
+    days: int = Query(1, ge=1, le=10),
 ):
     try:
-        fires = await fetch_fires(latitude, longitude, radius_km=alert_threshold_km + 10)
+        fires = await fetch_fires(latitude, longitude, radius_km=alert_threshold_km + 10, days=days)
         nearby = [f for f in fires if (f.distance_km or 999) <= alert_threshold_km]
         closest_km = fires[0].distance_km if fires else None
 
@@ -264,11 +265,12 @@ async def get_navigation_data(
     fire_radius_km: float = Query(50, ge=10, le=200),
     safe_place_radius_km: float = Query(20, ge=5, le=50),
     include_route: bool = Query(True),
+    days: int = Query(1, ge=1, le=10),
 ):
     warnings = []
 
     try:
-        fires = await fetch_fires(latitude, longitude, radius_km=fire_radius_km)
+        fires = await fetch_fires(latitude, longitude, radius_km=fire_radius_km, days=days)
         danger_zones = create_danger_zones(fires)
         closest_fire_km = fires[0].distance_km if fires else None
         alert_level = determine_alert_level(closest_fire_km, len(fires))
@@ -357,13 +359,14 @@ async def get_safe_route(
     dest_lng: float = Query(..., ge=-180, le=180),
     avoid_fires: bool = Query(True),
     profile: str = Query("driving-car"),
+    days: int = Query(1, ge=1, le=10),
 ):
     danger_zones = []
     if avoid_fires:
         try:
             mid_lat = (origin_lat + dest_lat) / 2
             mid_lng = (origin_lng + dest_lng) / 2
-            fires = await fetch_fires(mid_lat, mid_lng, radius_km=100)
+            fires = await fetch_fires(mid_lat, mid_lng, radius_km=100, days=days)
             danger_zones = create_danger_zones(fires)
         except Exception:
             pass
