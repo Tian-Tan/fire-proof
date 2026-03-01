@@ -105,7 +105,7 @@ export default function App() {
 
     (async () => {
       const perms = await Notifications.requestPermissionsAsync();
-      const authorized = perms.ios?.status === 2 || (perms as any).granted === true;
+      const authorized = perms.ios?.status === 2 || perms.granted === true || perms.status === 'granted';
       if (!authorized) return;
 
       try {
