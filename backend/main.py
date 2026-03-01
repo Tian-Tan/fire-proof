@@ -18,6 +18,7 @@ from models import (
 )
 from services import (
     fetch_fires,
+    fetch_fires_by_country,
     create_danger_zones,
     determine_alert_level,
     fetch_safe_places,
@@ -269,6 +270,33 @@ async def check_fire_alert(
             "fires_within_threshold": len(nearby),
             "closest_fire_km": closest_km,
             "threshold_km": alert_threshold_km,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/fires/locations")
+async def get_fire_locations(
+    region: str = Query("USA_CANADA", description="USA, CANADA, or USA_CANADA"),
+    days: int = Query(1, ge=1, le=10),
+    limit: int = Query(10, ge=1, le=100),
+    latitude: Optional[float] = Query(None, ge=-90, le=90),
+    longitude: Optional[float] = Query(None, ge=-180, le=180),
+):
+    try:
+        fires = await fetch_fires_by_country(
+            country_code=region,
+            days=days,
+            limit=limit,
+            ref_latitude=latitude,
+            ref_longitude=longitude,
+        )
+
+        return {
+            "count": len(fires),
+            "region": region,
+            "fires": fires,
+            "nearest": fires[0] if fires else None,
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
