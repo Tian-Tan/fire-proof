@@ -5,7 +5,7 @@ from models import FireData, DangerZone, AlertLevel
 import os
 
 FIRMS_API_KEY = os.getenv("FIRMS_API_KEY", "")
-FIRMS_BASE_URL = "https://firms.modaps.eosdis.nasa.gov/api/area/csv"
+FIRMS_AREA_URL = "https://firms.modaps.eosdis.nasa.gov/api/area/csv"
 SENSORS = ["VIIRS_SNPP_NRT", "VIIRS_NOAA20_NRT", "MODIS_NRT"]
 
 
@@ -96,7 +96,7 @@ async def fetch_fires(
     async with httpx.AsyncClient(timeout=30.0) as client:
         for sensor in SENSORS:
             try:
-                url = f"{FIRMS_BASE_URL}/{FIRMS_API_KEY}/{sensor}/{bbox}/{days}"
+                url = f"{FIRMS_AREA_URL}/{FIRMS_API_KEY}/{sensor}/{bbox}/{days}"
                 response = await client.get(url)
 
                 if response.status_code != 200:
@@ -191,3 +191,77 @@ def is_point_in_danger_zone(lat: float, lng: float, danger_zones: list[DangerZon
         if distance <= zone.radius_km:
             return True
     return False
+
+
+REGION_BBOXES = {
+    "USA": "-125,24,-66,49",
+    "CANADA": "-141,41,-52,84",
+    "USA_CANADA": "-141,24,-52,84",
+}
+
+
+async def fetch_fires_by_country(
+    country_code: str = "USA_CANADA",
+    days: int = 1,
+    limit: int = 100,
+    ref_latitude: Optional[float] = None,
+    ref_longitude: Optional[float] = None,
+) -> list[dict]:
+    if not FIRMS_API_KEY:
+        raise ValueError("FIRMS_API_KEY not configured")
+
+    bbox = REGION_BBOXES.get(country_code.upper(), REGION_BBOXES["USA_CANADA"])
+
+    all_fires = []
+    seen = set()
+
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        for sensor in SENSORS:
+            try:
+                url = f"{FIRMS_AREA_URL}/{FIRMS_API_KEY}/{sensor}/{bbox}/{days}"
+                response = await client.get(url)
+
+                if response.status_code != 200:
+                    continue
+
+                csv_text = response.text
+                if "Invalid MAP_KEY" in csv_text or "Error" in csv_text:
+                    continue
+
+                raw_fires = parse_firms_csv(csv_text)
+
+                for fire in raw_fires:
+                    if fire.get('latitude') is None or fire.get('longitude') is None:
+                        continue
+
+                    key = f"{fire['latitude']:.4f},{fire['longitude']:.4f}"
+                    if key in seen:
+                        continue
+                    seen.add(key)
+
+                    fire_entry = {
+                        "latitude": fire['latitude'],
+                        "longitude": fire['longitude'],
+                        "brightness": fire.get('brightness'),
+                        "acq_date": fire.get('acq_date'),
+                        "acq_time": fire.get('acq_time'),
+                        "confidence": fire.get('confidence'),
+                        "frp": fire.get('frp'),
+                    }
+
+                    if ref_latitude is not None and ref_longitude is not None:
+                        fire_entry["distance_km"] = round(calculate_distance_km(
+                            ref_latitude, ref_longitude,
+                            fire['latitude'], fire['longitude']
+                        ), 2)
+
+                    all_fires.append(fire_entry)
+
+            except Exception as e:
+                print(f"Error fetching from {sensor}: {e}")
+                continue
+
+    if ref_latitude is not None and ref_longitude is not None:
+        all_fires.sort(key=lambda f: f.get("distance_km", float('inf')))
+
+    return all_fires[:limit]

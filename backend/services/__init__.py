@@ -1,5 +1,6 @@
 from .fire_service import (
     fetch_fires,
+    fetch_fires_by_country,
     create_danger_zones,
     determine_alert_level,
     calculate_distance_km,
@@ -29,10 +30,18 @@ from .elevenlabs_service import (
     text_to_speech,
     speech_to_text,
 )
+from .rag_service import (
+    ensure_rag_schema,
+    initialize_rag_store,
+    load_seed_documents,
+    retrieve_guidance,
+    seed_documents,
+)
 
 __all__ = [
     # Fire
     "fetch_fires",
+    "fetch_fires_by_country",
     "create_danger_zones",
     "determine_alert_level",
     "calculate_distance_km",
@@ -53,4 +62,10 @@ __all__ = [
     # Audio
     "text_to_speech",
     "speech_to_text",
+    # RAG
+    "ensure_rag_schema",
+    "initialize_rag_store",
+    "load_seed_documents",
+    "retrieve_guidance",
+    "seed_documents",
 ]
