@@ -1,0 +1,119 @@
+[
+  {
+    "doc_id": "readygov-wildfires-prepare",
+    "title": "Ready.gov Wildfires: preparation and evacuation basics",
+    "source_url": "https://www.ready.gov/wildfires",
+    "source_org": "Ready.gov",
+    "topic": "evacuation",
+    "audience": ["general"],
+    "content": "Prepare before wildfire season by making a household evacuation plan, identifying multiple routes out, keeping emergency supplies ready, and staying alert for local emergency instructions. If officials direct evacuation, leave early, avoid waiting for visible flames, and check on neighbors who may need extra help."
+  },
+  {
+    "doc_id": "readygov-wildfires-home-hardening",
+    "title": "Ready.gov Wildfires: reducing home ignition risk",
+    "source_url": "https://www.ready.gov/wildfires",
+    "source_org": "Ready.gov",
+    "topic": "preparation",
+    "audience": ["general", "homeowners"],
+    "content": "Reduce ignition risk by clearing leaves and debris from roofs, gutters, decks, porches, and patios; keeping flammable items away from exterior walls; and maintaining defensible space around structures. Important documents, medications, and pet supplies should be packed so evacuation can happen quickly."
+  },
+  {
+    "doc_id": "cdc-wildfire-smoke-protection",
+    "title": "CDC Wildfire Smoke and Your Patients' Health: core smoke protection guidance",
+    "source_url": "https://www.cdc.gov/wildfires/safety/how-to-protect-yourself-from-wildfire-smoke.html",
+    "source_org": "CDC",
+    "topic": "smoke",
+    "audience": ["general", "patients"],
+    "content": "When wildfire smoke is present, stay indoors as much as possible, reduce strenuous outdoor activity, and use clean indoor air strategies if available. People with asthma, COPD, heart disease, pregnancy, or older age should act early because smoke can worsen breathing and cardiovascular symptoms."
+  },
+  {
+    "doc_id": "cdc-wildfire-smoke-mask-use",
+    "title": "CDC Wildfire smoke respiratory protection",
+    "source_url": "https://www.cdc.gov/wildfires/safety/how-to-protect-yourself-from-wildfire-smoke.html",
+    "source_org": "CDC",
+    "topic": "ppe",
+    "audience": ["general"],
+    "content": "If you must go outside in heavy smoke, a well-fitted NIOSH-approved respirator such as an N95 or P100 offers better protection from smoke particles than cloth face coverings. Respirators must fit well to work and can make breathing harder for some people."
+  },
+  {
+    "doc_id": "cdc-wildfire-smoke-children",
+    "title": "CDC protecting children from wildfire smoke",
+    "source_url": "https://www.cdc.gov/wildfires/risk-factors/protecting-children-from-wildfire-smoke-and-ash.html",
+    "source_org": "CDC",
+    "topic": "children",
+    "audience": ["children", "caregivers"],
+    "content": "Children are more vulnerable to wildfire smoke because they breathe more air relative to body size and spend more time active outdoors. Limit outdoor play when air quality is poor, move activities inside, watch for coughing or trouble breathing, and follow a clinician's asthma action plan if the child has one."
+  },
+  {
+    "doc_id": "cdc-wildfire-ash-children",
+    "title": "CDC protecting children from wildfire ash",
+    "source_url": "https://www.cdc.gov/wildfires/risk-factors/protecting-children-from-wildfire-smoke-and-ash.html",
+    "source_org": "CDC",
+    "topic": "ash",
+    "audience": ["children", "caregivers"],
+    "content": "Keep children away from ash cleanup areas because ash can irritate the skin, eyes, and lungs. Before children return to play areas, clean ash gently to avoid stirring it back into the air and use damp methods rather than dry sweeping when possible."
+  },
+  {
+    "doc_id": "airnow-clean-room",
+    "title": "AirNow clean room advice during wildfire smoke",
+    "source_url": "https://www.airnow.gov/wildfire-smoke/",
+    "source_org": "AirNow",
+    "topic": "indoor_air",
+    "audience": ["general"],
+    "content": "Create a cleaner air room by closing windows and doors, using a portable air cleaner if available, and setting HVAC or air conditioning systems to recirculate when it is safe to do so. Avoid activities that add indoor pollution, such as smoking, frying food, or vacuuming without proper filtration."
+  },
+  {
+    "doc_id": "airnow-aqi-check",
+    "title": "AirNow wildfire smoke: monitoring conditions",
+    "source_url": "https://www.airnow.gov/wildfire-smoke/",
+    "source_org": "AirNow",
+    "topic": "monitoring",
+    "audience": ["general"],
+    "content": "Use AirNow and local alerts to monitor wildfire smoke and air quality conditions because smoke impacts can change quickly. Outdoor activity should be reduced as AQI worsens, especially for sensitive groups."
+  },
+  {
+    "doc_id": "epa-smoke-ready-box-fan",
+    "title": "EPA Smoke Ready box fan filtration guidance",
+    "source_url": "https://www.epa.gov/indoor-air-quality-iaq/wildfires-and-indoor-air-quality-iaq",
+    "source_org": "EPA",
+    "topic": "indoor_air",
+    "audience": ["general"],
+    "content": "EPA wildfire smoke guidance emphasizes cleaner indoor air and explains that properly assembled DIY box fan air cleaners can reduce indoor smoke particles when commercial purifiers are not available. Keep these devices away from small children and follow current safety guidance for fan and filter combinations."
+  },
+  {
+    "doc_id": "epa-smoke-return-home",
+    "title": "EPA wildfire smoke and ash after the fire",
+    "source_url": "https://www.epa.gov/indoor-air-quality-iaq/wildfires-and-indoor-air-quality-iaq",
+    "source_org": "EPA",
+    "topic": "reentry",
+    "audience": ["general", "returning_residents"],
+    "content": "After a fire, ash and contaminated dust can remain hazardous. Limit time in dusty areas, use appropriate respiratory protection when cleaning, avoid aggressive sweeping that re-suspends ash, and follow local instructions before reentering damaged buildings."
+  },
+  {
+    "doc_id": "usfa-wui-before-during-after",
+    "title": "USFA guidance for before, during, and after a wildfire",
+    "source_url": "https://www.usfa.fema.gov/wui/",
+    "source_org": "USFA",
+    "topic": "evacuation",
+    "audience": ["general", "homeowners"],
+    "content": "USFA guidance recommends being ready to leave immediately when wildfire threatens, keeping vehicles fueled, wearing protective clothing during evacuation if time allows, and returning only after local authorities say it is safe. Post-fire hazards can include hot spots, damaged utilities, and unstable structures."
+  },
+  {
+    "doc_id": "airnow-seniors-chronic-conditions",
+    "title": "AirNow factsheets for older adults and people with chronic conditions",
+    "source_url": "https://www.airnow.gov/publications/wildfire-guide-factsheets/",
+    "source_org": "AirNow",
+    "topic": "vulnerable_groups",
+    "audience": ["older_adults", "chronic_conditions"],
+    "content": "Older adults and people with chronic heart or lung disease should reduce smoke exposure early, keep medicines and medical equipment ready, and contact a clinician if symptoms worsen. Plans should include backup power or alternate shelter if medical devices depend on electricity."
+  },
+  {
+    "doc_id": "airnow-pets-livestock",
+    "title": "AirNow factsheets for pets and animals during smoke events",
+    "source_url": "https://www.airnow.gov/publications/wildfire-guide-factsheets/",
+    "source_org": "AirNow",
+    "topic": "animals",
+    "audience": ["pet_owners"],
+    "content": "Pets can be affected by wildfire smoke and heat. Keep animals indoors when possible, ensure water is available, minimize exertion in smoky conditions, and coordinate evacuation supplies for food, medications, carriers, and veterinary records."
+  }
+]
