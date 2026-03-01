@@ -11,22 +11,27 @@ export function useUserLocation() {
   const [granted, setGranted] = useState(false);
 
   useEffect(() => {
+    let subscription: Location.LocationSubscription | null = null;
+
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') return;
       setGranted(true);
 
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-      const c = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      //log user coords to use for api calls!
-      console.log('User coords:', c);
-      setCoords(c);
+      subscription = await Location.watchPositionAsync(
+        { accuracy: Location.Accuracy.Balanced, distanceInterval: 5 },
+        (location) => {
+          const c = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          };
+          console.log('User coords:', c);
+          setCoords(c);
+        }
+      );
     })();
+
+    return () => { subscription?.remove(); };
   }, []);
 
   return { coords, granted };
