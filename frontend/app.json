@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "FireProof",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/fireprooficon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -15,7 +15,16 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.jay.fireproof",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Your location is used to center the map and show nearby wildfire activity."
+        "NSLocationWhenInUseUsageDescription": "Your location is used to center the map and show nearby wildfire activity.",
+        "NSMicrophoneUsageDescription": "Used to ask wildfire safety questions by voice.",
+        "NSAppTransportSecurity": {
+          "NSExceptionDomains": {
+            "134.199.193.195": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": false
+            }
+          }
+        }
       }
     },
     "android": {
@@ -32,7 +41,14 @@
     },
     "plugins": [
       "@maplibre/maplibre-react-native",
-      "expo-audio"
+      "expo-audio",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/fireprooficon.png",
+          "color": "#FF453A"
+        }
+      ]
     ],
     "newArchEnabled": false
   }
