@@ -1,5 +1,6 @@
 from .fire_service import (
     fetch_fires,
+    fetch_fires_by_country,
     create_danger_zones,
     determine_alert_level,
     calculate_distance_km,
@@ -28,6 +29,7 @@ from .routing_service import (
 __all__ = [
     # Fire
     "fetch_fires",
+    "fetch_fires_by_country",
     "create_danger_zones",
     "determine_alert_level",
     "calculate_distance_km",
